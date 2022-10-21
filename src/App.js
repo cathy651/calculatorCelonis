@@ -9,7 +9,7 @@ function App() {
   let [syntaxTree, syntaxTreeChange] = useState('');
   let [syntaxTreeJson, syntaxTreeJsonChange] = useState(null);
   let [visualizerOutput, visualizerChange] = useState('');
-  let [canRemove, canRemoveChange] = useState(true);
+  // let [canRemove, canRemoveChange] = useState(true);
   const handleChange = (event) => {
     formulaChange(event.target.value);
   }
@@ -21,46 +21,162 @@ function App() {
   };
 
   const convertAstToFormula = () => {  
-    const convertedFormula = convertToFormula(syntaxTree);   
+    const convertedFormula = convertToFormula(syntaxTree,false, '0');   
     visualizerChange(convertedFormula);
   };
 
+  const onClickRemove = (target, tree) => {
+    let pathToRemove = target.id.substring(2,target.id.length).split('.');
+    // split by .
+    console.log(pathToRemove);
+    let targetNode;
+    // 这里不会不知道怎么把["target", "name"] 得到的路径assign to node. tree['target']['name']
+    for(let item of pathToRemove) {
+      targetNode = tree[item]
+    }
+  }
+  
+
   const selectFormula = (e) => {
-    if(e.target.className === 'partOfFormula basic' && canRemove) {
+    if(e.target.className === 'partOfFormula basic' ) {
       // 可以删除
       let removeButton = document.createElement('button');
+      removeButton.className = 'removeBtn';
       removeButton.append('X');
       e.target.appendChild(removeButton);
-      canRemoveChange(false);
+      removeButton.onClick = onClickRemove(e.target, syntaxTreeJson);
+     
+      console.log(syntaxTreeJson);
     }
   }
 
+
   let curClassName = 0;
-  const convertToFormula = (tree) => {
+  const convertToFormula = (tree, preCase, prePath) => {
     //border lay
     if(!tree || tree.length === 0) return ;
-     switch(tree.type) {
+    if(preCase === true) {
+      preCase = false;
+      switch(tree.type) {
         case 'PAREN': 
-            let curRes = '(' + convertToFormula(tree.expression) +')';
-            return (<div className='partOfFormula' id={(curClassName++).toString()}>{curRes}</div>);
-        case 'FUNCTION':
-            return (<div className='partOfFormula' id={(curClassName++).toString()}>{tree.name} ( {convertToFormula(tree.arguments[0])} )</div>);
-        case 'ADDITION':
-            return (<div className='partOfFormula basic' id={(curClassName++).toString()}>{convertToFormula(tree.left)}  + {convertToFormula(tree.right)}</div>);
-        case 'SUBTRACTION':
-            return (<div className='partOfFormula basic' id={(curClassName++).toString()}>{convertToFormula(tree.left)}  - {convertToFormula(tree.right)}</div>);
-        case 'MULTIPLICATION':
-            return (<div className='partOfFormula basic' id={(curClassName++).toString()}>{convertToFormula(tree.left)} * {convertToFormula(tree.right)}</div>);
-        case 'DIVISION':
-            return (<div className='partOfFormula basic' id={(curClassName++).toString()}>{convertToFormula(tree.left)}  / {convertToFormula(tree.right)}</div>);
+        //.expression
+            return (<div className='partOfFormula' id={prePath = prePath + '.expression'}>( {convertToFormula(tree.expression,preCase, prePath)} )</div>);
+        case 'FUNCTION': 
+        //.arguments
+            return (<div className='partOfFormula' id={prePath = prePath + '.arguments'}>{tree.name + '(' }  {convertToFormula(tree.arguments[0],preCase, prePath)} )</div>);
+            case 'ADDITION':
+              //.left .right
+                preCase = true;
+                let prePathAdd = prePath;
+                return (
+                  <>
+                    <div className='partOfFormula' id={prePath = prePathAdd + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+                    +
+                    <div className='partOfFormula' id={prePath = prePathAdd + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+                  </>
+                  );
+            case 'SUBTRACTION':
+                  //.left .right
+                preCase = true;
+                let prePathSub = prePath;
+                return (
+                  <>
+                    <div className='partOfFormula' id={prePath = prePathSub + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+                    -
+                    <div className='partOfFormula' id={prePath = prePathSub + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+                  </>
+                  );
+            case 'MULTIPLICATION':
+                  //.left .right
+                preCase = true;
+                let prePathMul = prePath;
+                return (
+                  <>
+                    <div className='partOfFormula' id={prePath = prePathMul + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+                    *
+                    <div className='partOfFormula' id={prePath = prePathMul + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+                  </>
+                  );
+            case 'DIVISION':
+                  //.left .right
+                preCase = true;
+                let prePathDivision = prePath;
+                return (
+                  <>
+                    <div className='partOfFormula' id={prePath = prePathDivision + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+                    /
+                    <div className='partOfFormula' id={prePath = prePathDivision + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+                  </>
+                  );
         case 'NEGATION':
-            return (<div className='partOfFormula' id={(curClassName++).toString()}>-{tree.expression.value}</div>);
+            return (<div className='partOfFormula' id={prePath}>-{tree.expression.value}</div>);
         case 'POWER':
-            return (<div className='partOfFormula' id={(curClassName++).toString()}>{convertToFormula(tree.expression)}^{tree.power.value.toString()}</div>);
+            return (<div className='partOfFormula' id={prePath}>{convertToFormula(tree.expression,preCase,prePath)}^{tree.power.value.toString()}</div>);
         case 'VARIABLE':
-            return (<div className='partOfFormula'>{tree.name}</div>);
+            return (<div className='partOfFormula' id={prePath}>{tree.name}</div>);
        	case 'NUMBER':
-        		return (<div className='partOfFormula'>{tree.value}</div>);
+        		return (<div className='partOfFormula' id={prePath}>{tree.value}</div>);
+      }
+    }
+    switch(tree.type) {
+      case 'PAREN': 
+      //.expression
+          return (<div className='partOfFormula basic' id={prePath = prePath + '.expression'}>( {convertToFormula(tree.expression,preCase, prePath)} )</div>);
+      case 'FUNCTION': 
+      //.arguments
+          return (<div className='partOfFormula basic' id={prePath = prePath + '.arguments'}>{tree.name + '(' }  {convertToFormula(tree.arguments[0],preCase, prePath)} )</div>);
+      case 'ADDITION':
+        //.left .right
+          preCase = true;
+          let prePathAdd = prePath;
+          return (
+            <>
+              <div className='partOfFormula basic' id={prePath = prePathAdd + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+              +
+              <div className='partOfFormula basic' id={prePath = prePathAdd + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+            </>
+            );
+      case 'SUBTRACTION':
+            //.left .right
+          preCase = true;
+          let prePathSub = prePath;
+          return (
+            <>
+              <div className='partOfFormula basic' id={prePath = prePathSub + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+              -
+              <div className='partOfFormula basic' id={prePath = prePathSub + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+            </>
+            );
+      case 'MULTIPLICATION':
+            //.left .right
+          preCase = true;
+          let prePathMul = prePath;
+          return (
+            <>
+              <div className='partOfFormula basic' id={prePath = prePathMul + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+              *
+              <div className='partOfFormula basic' id={prePath = prePathMul + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+            </>
+            );
+      case 'DIVISION':
+            //.left .right
+          preCase = true;
+          let prePathDivision = prePath;
+          return (
+            <>
+              <div className='partOfFormula basic' id={prePath = prePathDivision + '.left'}>{convertToFormula(tree.left,preCase,prePath)}</div>
+              /
+              <div className='partOfFormula basic' id={prePath = prePathDivision + '.right'}>{convertToFormula(tree.right,preCase, prePath)}</div>
+            </>
+            );
+      case 'NEGATION':
+          return (<div className='partOfFormula basic' id={prePath}>-{tree.expression.value}</div>);
+      case 'POWER':
+          return (<div className='partOfFormula basic' id={prePath}>{convertToFormula(tree.expression,preCase,prePath)}^{tree.power.value.toString()}</div>);
+      case 'VARIABLE':
+          return (<div className='partOfFormula basic' id={prePath}>{tree.name}</div>);
+       case 'NUMBER':
+          return (<div className='partOfFormula basic' id={prePath}>{tree.value}</div>);
     }
   } 
 
