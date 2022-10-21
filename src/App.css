@@ -1,0 +1,24 @@
+.formulizer {
+  padding: 16px;
+}
+
+.visualizerContainer {
+  display: flex;
+  flex-direction: row;
+}
+
+.partOfFormula {
+  display: flex;
+  flex-direction: row;
+  border: 1px solid blue;
+  margin:5px;
+  padding: 5px 10px;
+  align-items: baseline;
+  cursor: pointer;
+}
+
+.button {
+  width: 10px;
+  height: 10px;
+  background-color: yellow;
+}
