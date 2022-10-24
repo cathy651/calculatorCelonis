@@ -1,3 +1,31 @@
+# ReadMe
+
+Welcome to the solution of Catherine's programming challenge. In this project, I build a calculator with main features including:
+
+1. Generate a formula string from the tree. (JSON syntax tree => Formula)
+
+2. Design the architecture and component structure to visualize the formula hierarchy. 
+
+3. Visualize a syntax tree (parsed JSON tree) in a UI component that represents the formula. (JSON syntax tree => Visualized Syntax Tree)
+
+4. Allow deletion of nodes from the tree through UI interactions (Changes to UI -> changes to JSON syntax tree)
+
+![Alt text](./assets/calculator-example-ui.png)
+
+I use the example provided to build the component. 
+
+How to test:
+
+1. Click the "Parse and update AST View" button to show the Syntax tree.
+
+![Alt text](./assets/clickToShowBtn.png)
+
+2. Click the "Convert AST to Formula" button to show the visualized formula.
+
+![Alt text](./assets/afterDelete.png)
+
+3. Click on the "canRemoveModule"(only some of sub-parts are removable), which are children of "+/-/*//", to delete some part of formula, and update the Syntax tree at same time. 
+
 # Celonis Programming Challenge
 
 Dear applicant,
