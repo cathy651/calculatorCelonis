@@ -1,15 +1,16 @@
 import React, { useState, useRef} from 'react'
-import useClickOutSide from '../hooks/useClickOutSide';
+import useClickOutSide from '../hooks/useClickOutSide.js';
 import './Element.css'
 
 const Element = ({ id, nextStep, syntaxTreeJson, updateSyntaxTree }) => {
     const ref = useRef(null);
     const [showRemove, showRemoveChange] = useState(false);
     const [deleteFormula, SetDeleteFormula] = useState(false);
+    // when click out of ref
     useClickOutSide(ref, (e) => {
         showRemoveChange(false);
     })
-
+    
     const handleDeleteFormula = (e) => {
         SetDeleteFormula(true);
         updateSyntaxTree(id);

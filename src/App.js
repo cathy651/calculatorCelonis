@@ -13,7 +13,7 @@ function App() {
   
   useEffect(()=>{
     syntaxTreeJsonChange(JSON.stringify(syntaxTree, null, 2));
-  },[syntaxTree]);
+  },[syntaxTree])
 
   const handleChange = (event) => {
     formulaChange(event.target.value);
@@ -24,15 +24,14 @@ function App() {
     const newSyntaxTree = parse(formula);
     syntaxTreeChange(newSyntaxTree);
     syntaxTreeJsonChange(JSON.stringify(newSyntaxTree, null, 2));
-  };
+  }
 
   const convertAstToFormula = () => {  
     const convertedFormula = convertToFormula(syntaxTree,'0');   
     visualizerChange(convertedFormula);
-  };
+  }
   // function to set obj value with a path of string
   const setPath = (object, path, value) => {
-    
   	const parts = path.slice(2,path.length).split('.');
     console.log(parts);
   	const limit = parts.length - 1;
@@ -46,7 +45,7 @@ function App() {
     }
   	const key = parts[limit];
     object[key] = value;
-};
+  }
 
   const updateSyntaxTree = (path) => {
     setPath(syntaxTree, path, null);

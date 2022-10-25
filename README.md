@@ -18,13 +18,14 @@ How to test:
 
 1. Click the "Parse and update AST View" button to show the Syntax tree.
 
-![Alt text](./assets/clickToShowBtn.png)
 
 2. Click the "Convert AST to Formula" button to show the visualized formula.
 
-![Alt text](./assets/afterDelete.png)
+![Alt text](./assets/clickToShowBtn.png)
 
 3. Click on the "canRemoveModule"(only some of sub-parts are removable), which are children of "+/-/*//", to delete some part of formula, and update the Syntax tree at same time. 
+
+![Alt text](./assets/afterDelete.png)
 
 # Celonis Programming Challenge
 
