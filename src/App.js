@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './App.css';
 import * as Parser from './parser/formula-parser.js';
 import Element from './Element/Element.js';
-// import convertToFormula from './convertToFormula.js'
+
 const parse = Parser.parse;
 
 function App() {
@@ -36,7 +36,7 @@ function App() {
     console.log(parts);
   	const limit = parts.length - 1;
 		for (let i = 0; i < limit; i++) {
-      	const key = parts[i];
+      	let key = parts[i];
         if(key === 'arguments[0]') {
         	object = object.arguments[0]; 
         } else {
